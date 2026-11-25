@@ -34,7 +34,7 @@ def check(text: str) -> str | None:
         return "length %d outside 1..%d" % (len(text), LIMIT)
     if text.strip() != text:
         return "leading or trailing whitespace"
-    if any(ord(ch) < 0x20 for ch in text):
+    if any(ord(ch) < 0x20 or ord(ch) == 0x7F for ch in text):
         return "must be a single line with no control characters"
     return None
 
@@ -69,6 +69,7 @@ def run_self_test() -> int:
     cases = [
         ("", False), ("   ", False), ("x" * 201, False),
         ("two\nlines", False), (" padded ", False), ("tab\there", False),
+        ("del\x7fchar", False),
         ("x", True), ("y" * 200, True),
     ]
     for probe_text, should_pass in cases:
